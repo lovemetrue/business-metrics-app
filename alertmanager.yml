@@ -1,8 +1,6 @@
 
 global:
   # Настройки по умолчанию (можно оставить пустыми для начала)
-  smtp_smarthost: 'localhost:587'
-  smtp_from: 'alertmanager@localhost'
 
 # Маршрутизация алертов
 route:
@@ -21,11 +19,21 @@ route:
   # Получатель по умолчанию
   receiver: 'web.hook'
 
-# Получатели уведомлений
+route:
+  group_by: ['alertname']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 1h
+  receiver: 'telegram-notifications'
+
 receivers:
-  - name: 'web.hook'
-    webhook_configs:
-      - url: 'http://localhost:5001/'
+  - name: 'telegram-notifications'
+    telegram_configs:
+      - api_url: 'https://api.telegram.org'
+        chat_id: -1763357182  # Заменить на реальный chat_id
+        bot_token: '8202698104:AAFcKxctFDbQBPjeDSpG-TmIfKjHKWBv2T8'  # Заменить на реальный token
+        parse_mode: 'HTML'
+        message: '🚨 <b>{{ .CommonLabels.alertname }}</b>\n\n{{ .CommonAnnotations.summary }}\n\n{{ range .Alerts }}{{ .Annotations.description }}\n{{ end }}'
         
 # Отключаем встроенные уведомления (для тестирования)
 inhibit_rules:
