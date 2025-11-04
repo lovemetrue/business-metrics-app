@@ -1,0 +1,16 @@
+{{ define "telegram.message" }}
+{{ if eq .Status "firing" }}🚨{{ else }}✅{{ end }} <b>{{ .Status | toUpper }}</b> - {{ .CommonLabels.alertname }}
+
+{{ if eq .Status "firing" }}
+🔴 <b>Проблема:</b> {{ .CommonAnnotations.summary }}
+📝 <b>Описание:</b> {{ .CommonAnnotations.description }}
+{{ else }}
+🟢 <b>Решено:</b> {{ .CommonAnnotations.summary }}
+{{ end }}
+
+{{ if .CommonAnnotations.runbook }}
+📖 <b>Runbook:</b> {{ .CommonAnnotations.runbook }}
+{{ end }}
+
+⏰ <b>Время:</b> {{ .Alerts.Firing | len }} active since {{ (index .Alerts 0).StartsAt.Format "15:04" }}
+{{ end }}
