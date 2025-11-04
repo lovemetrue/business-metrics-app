@@ -2,6 +2,9 @@
 global:
   # Настройки по умолчанию (можно оставить пустыми для начала)
 
+templates: 
+  - 'templates/*.tmpl' 
+  
 # Маршрутизация алертов
 route:
   # Группировать алерты по имени и меткам
@@ -33,7 +36,7 @@ receivers:
         chat_id: -1763357182  # Заменить на реальный chat_id
         bot_token: '8202698104:AAFcKxctFDbQBPjeDSpG-TmIfKjHKWBv2T8'  # Заменить на реальный token
         parse_mode: 'HTML'
-        message: '🚨 <b>{{ .CommonLabels.alertname }}</b>\n\n{{ .CommonAnnotations.summary }}\n\n{{ range .Alerts }}{{ .Annotations.description }}\n{{ end }}'
+        message: '{{ template "telegram.message" . }}'
         
 # Отключаем встроенные уведомления (для тестирования)
 inhibit_rules:
