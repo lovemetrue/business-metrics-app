@@ -1,0 +1,51 @@
+groups:
+  # Группа для бизнес-алертов
+  - name: business.rules
+    rules:
+      # Алерт на падение количества заказов
+      - alert: OrdersDrop
+        expr: rate(app_orders_total[5m]) < 0.1
+        for: 2m
+        labels:
+          severity: critical
+          team: business
+        annotations:
+          summary: "Резкое падение количества заказов"
+          description: "Количество заказов упало ниже 0.1 в секунду за последние 5 минут"
+          runbook: "https://example.com/runbooks/orders-drop"
+          
+      # Алерт на отсутствие активности
+      - alert: NoOrders
+        expr: app_orders_total offset 5m < app_orders_total
+        for: 5m
+        labels:
+          severity: critical
+          team: business
+        annotations:
+          summary: "Нет новых заказов"
+          description: "Не было новых заказов в течение 5 минут"
+          
+  # Группа для технических алертов
+  - name: technical.rules
+    rules:
+      # Алерт на недоступность приложения
+      - alert: ApplicationDown
+        expr: up{job="web_application"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: devops
+        annotations:
+          summary: "Приложение недоступно"
+          description: "Приложение не отвечает более 1 минуты"
+          
+      # Алерт на высокую ошибок
+      - alert: HighErrorRate
+        expr: rate(app_errors_total[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+          team: development
+        annotations:
+          summary: "Высокий уровень ошибок"
+          description: "Более 10% запросов завершаются ошибкой"
