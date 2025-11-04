@@ -1,0 +1,36 @@
+
+global:
+  # Настройки по умолчанию (можно оставить пустыми для начала)
+  smtp_smarthost: 'localhost:587'
+  smtp_from: 'alertmanager@localhost'
+
+# Маршрутизация алертов
+route:
+  # Группировать алерты по имени и меткам
+  group_by: ['alertname', 'cluster']
+  
+  # Ждать 10 секунд перед отправкой первой группы
+  group_wait: 10s
+  
+  # Отправлять обновления каждые 10 секунд
+  group_interval: 10s
+  
+  # Повторять алерт каждые 1 час, если он не resolved
+  repeat_interval: 1h
+  
+  # Получатель по умолчанию
+  receiver: 'web.hook'
+
+# Получатели уведомлений
+receivers:
+  - name: 'web.hook'
+    webhook_configs:
+      - url: 'http://localhost:5001/'
+        
+# Отключаем встроенные уведомления (для тестирования)
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'cluster', 'service']
